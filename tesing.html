@@ -1,1 +1,57 @@
 <h1>Hello</h1>
+
+    public function export() {
+        $type = 'application/pdf';
+        $timestamp = time();
+        $filename = 'Inventory' . $timestamp . '.xls';
+        
+        $isPrintHeader = false;
+        $inventoryItems = Inventory::all()->toArray();
+        $output = '';
+        foreach ($inventoryItems as $row) {
+            if (! $isPrintHeader) {
+                $output .= implode("\t", array_keys($row)) . "\n";
+                $isPrintHeader = true;
+            }
+            $output .= implode("\t", array_values($row)) . "\n";
+        }
+
+        // $output = '
+        //     <table>
+        //         <tr>
+        //             <th>Name</th>
+        //             <th>Manufacturer</th>
+        //             <th>Unique ID</th>
+        //             <th>Purchase Date</th>
+        //             <th>Purchase Cost</th>
+        //             <th>Quantity</th>
+        //             <th>Created On</th>
+        //         </tr>
+        //     </table>
+        //     ';
+
+        // foreach ($inventoryItems as $inventoryItem) {
+        //     $output .= '
+        //         <tr>
+        //             <td>'. $inventoryItem['item_name'] .'</td>
+        //             <td>'. $inventoryItem['manufacturer'] .'</td>
+        //             <td>'. $inventoryItem['unique_id'] .' ID</td>
+        //             <td>'. $inventoryItem['purchase_date'] .' Date</td>
+        //             <td>'. $inventoryItem['purchase_amount'] .' Cost</td>
+        //             <td>'. $inventoryItem['qty'] .' On</td>
+        //             <td>'. $inventoryItem['created_at'] .' On</td>
+        //         </tr>
+        //     ';
+        // }
+
+
+        // $headers = [
+        //     'Content-Description' => 'File Transfer',
+        //     'Content-Type' => 'application/pdf',
+        // ];
+        // return \Response::download($output, 'report.xls', $headers);
+
+        return response($output)
+            ->header('Content-Type', $type)
+            ->header('Content-Disposition', 'attachment; filename='.$filename);
+    }
